@@ -75,7 +75,7 @@
                     <commandLineOptions>
                         <option>
                             <key>--port</key>
-                            <value>8080</value>
+                            <value>8000</value>
                         </option>
                         <option>
                             <key>--contextroot</key>
@@ -83,7 +83,6 @@
                         </option>
                         <option>
                             <key>--nohazelcast</key>
-                            <value>true</value>
                         </option>
                     </commandLineOptions>
                 </configuration>

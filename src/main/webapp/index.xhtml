@@ -183,17 +183,17 @@
             <div class="welcome-card">
                 <h2 style="margin: 0 0 0.5rem 0; color: var(--primary);">#{dashboardBean.welcomeMessage}</h2>
                 <p style="margin: 0; color: var(--text-muted);">
-                    Project JSF telah siap di Antigravity. Anda dapat mulai mengembangkan modul <b>Ijazah Karyawan</b>,
+                    Project Magang POLIWANGI telah siap. Anda dapat mulai mengembangkan modul <b>Ijazah Karyawan</b>,
                     <b>Regulasi Karyawan</b>, dan <b>Komite Keperawatan</b>.
                 </p>
                 <div style="margin-top: 1rem;">
                     <p:commandButton value="Perbarui Data" icon="pi pi-refresh" action="#{dashboardBean.refreshData}"
-                        update="messages recentTable" styleClass="p-button-outlined p-button-sm" />
+                        update="messages recentTable statsPanel" styleClass="p-button-outlined p-button-sm" />
                 </div>
             </div>
 
             <!-- Stats Ringkasan -->
-            <div class="stats-grid">
+            <h:panelGroup id="statsPanel" layout="block" styleClass="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon blue">
                         <i class="pi pi-id-card"></i>
@@ -223,11 +223,19 @@
                         <div class="stat-value">#{dashboardBean.totalKomite}</div>
                     </div>
                 </div>
-            </div>
+            </h:panelGroup>
 
             <!-- Tabel Dokumen Terkini -->
             <div class="content-card">
-                <h3 style="margin-top: 0; margin-bottom: 1.25rem;">Aktivitas Dokumen Terbaru</h3>
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                    <h3 style="margin: 0;">Aktivitas Dokumen Terbaru</h3>
+                    <p:commandButton value="Tambah Dokumen" icon="pi pi-plus"
+                        actionListener="#{dashboardBean.prepareNewDocument}" update=":mainForm:manage-document-content"
+                        oncomplete="PF('manageDocumentDialog').show()" styleClass="p-button-success p-button-sm">
+                        <p:resetInput target=":mainForm:manage-document-content" />
+                    </p:commandButton>
+                </div>
 
                 <p:dataTable id="recentTable" var="doc" value="#{dashboardBean.recentDocuments}" stripedRows="true"
                     responsiveLayout="scroll">
@@ -251,11 +259,82 @@
                         </span>
                     </p:column>
 
-                    <p:column headerText="Aksi" style="width: 100px; text-align: center;">
-                        <p:commandButton icon="pi pi-search" styleClass="p-button-rounded p-button-text p-button-sm" />
+                    <p:column headerText="Aksi" style="width: 120px; text-align: center;">
+                        <p:commandButton icon="pi pi-pencil" update=":mainForm:manage-document-content"
+                            oncomplete="PF('manageDocumentDialog').show()" action="#{dashboardBean.prepareEdit(doc)}"
+                            styleClass="edit-button p-button-rounded p-button-success p-button-text p-button-sm"
+                            process="@this">
+                            <p:resetInput target=":mainForm:manage-document-content" />
+                        </p:commandButton>
+                        <p:commandButton icon="pi pi-trash" action="#{dashboardBean.deleteDocument(doc)}"
+                            update=":mainForm:messages :mainForm:recentTable :mainForm:statsPanel"
+                            styleClass="p-button-rounded p-button-danger p-button-text p-button-sm" process="@this">
+                            <p:confirm header="Konfirmasi Hapus"
+                                message="Apakah Anda yakin ingin menghapus dokumen ini?"
+                                icon="pi pi-exclamation-triangle" />
+                        </p:commandButton>
                     </p:column>
                 </p:dataTable>
             </div>
+
+            <!-- Dialog Form CRUD -->
+            <p:dialog header="Detail Dokumen" showEffect="fade" modal="true" widgetVar="manageDocumentDialog"
+                responsive="true" style="width: 450px;">
+                <p:outputPanel id="manage-document-content" class="ui-fluid">
+                    <h:panelGroup rendered="#{not empty dashboardBean.selectedDocument}">
+                        <div class="field" style="margin-bottom: 1.25rem;">
+                            <p:outputLabel for="kategori"
+                                style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Kategori
+                            </p:outputLabel>
+                            <p:selectOneMenu id="kategori" value="#{dashboardBean.selectedDocument.kategori}"
+                                required="true">
+                                <f:selectItem itemLabel="Ijazah" itemValue="Ijazah" />
+                                <f:selectItem itemLabel="Regulasi" itemValue="Regulasi" />
+                                <f:selectItem itemLabel="Komite Keperawatan" itemValue="Komite Keperawatan" />
+                            </p:selectOneMenu>
+                        </div>
+                        <div class="field" style="margin-bottom: 1.25rem;">
+                            <p:outputLabel for="nama" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">
+                                Nama / Judul Dokumen</p:outputLabel>
+                            <p:inputText id="nama" value="#{dashboardBean.selectedDocument.namaDokumen}" required="true"
+                                requiredMessage="Nama dokumen wajib diisi" />
+                        </div>
+                        <div class="field" style="margin-bottom: 1.25rem;">
+                            <p:outputLabel for="unit" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">
+                                Unit / Pemilik</p:outputLabel>
+                            <p:inputText id="unit" value="#{dashboardBean.selectedDocument.unitPengaju}" required="true"
+                                requiredMessage="Unit / pemilik wajib diisi" />
+                        </div>
+                        <div class="field" style="margin-bottom: 1.5rem;">
+                            <p:outputLabel for="status"
+                                style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Status</p:outputLabel>
+                            <p:selectOneMenu id="status" value="#{dashboardBean.selectedDocument.status}"
+                                required="true">
+                                <f:selectItem itemLabel="Terverifikasi" itemValue="Terverifikasi" />
+                                <f:selectItem itemLabel="Menunggu Validasi" itemValue="Menunggu Validasi" />
+                                <f:selectItem itemLabel="Aktif" itemValue="Aktif" />
+                                <f:selectItem itemLabel="Revisi" itemValue="Revisi" />
+                            </p:selectOneMenu>
+                        </div>
+                    </h:panelGroup>
+                </p:outputPanel>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Simpan" icon="pi pi-check" actionListener="#{dashboardBean.saveDocument}"
+                        update="manage-document-content recentTable statsPanel messages"
+                        process="manage-document-content @this"
+                        oncomplete="if (!args.validationFailed) PF('manageDocumentDialog').hide()"
+                        styleClass="p-button-success" />
+                    <p:commandButton value="Batal" icon="pi pi-times" onclick="PF('manageDocumentDialog').hide()"
+                        class="ui-button-secondary" type="button" styleClass="p-button-outlined" />
+                </f:facet>
+            </p:dialog>
+
+            <!-- Confirmation Dialog -->
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                <p:commandButton value="Tidak" type="button" styleClass="ui-confirmdialog-no p-button-outlined" />
+                <p:commandButton value="Ya, Hapus" type="button" styleClass="ui-confirmdialog-yes p-button-danger" />
+            </p:confirmDialog>
         </h:form>
     </div>
 </h:body>
