@@ -10,166 +10,21 @@
     </f:facet>
     <title>Aplikasi Keperawatan - RSI Fatimah Banyuwangi</title>
 
-    <style>
-        :root {
-            --primary: #0284c7;
-            --primary-dark: #0369a1;
-            --primary-light: #e0f2fe;
-            --surface: #ffffff;
-            --bg: #f8fafc;
-            --text: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --success: #10b981;
-            --warning: #f59e0b;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-        }
-
-        .header-bar {
-            background: linear-gradient(135deg, #0284c7 0%, #0f766e 100%);
-            color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
-        }
-
-        .welcome-card {
-            background: var(--surface);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            border-left: 5px solid var(--primary);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: var(--surface);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 1.25rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-icon {
-            width: 54px;
-            height: 54px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .stat-icon.blue {
-            background-color: #e0f2fe;
-            color: #0284c7;
-        }
-
-        .stat-icon.emerald {
-            background-color: #d1fae5;
-            color: #059669;
-        }
-
-        .stat-icon.amber {
-            background-color: #fef3c7;
-            color: #d97706;
-        }
-
-        .stat-info h4 {
-            margin: 0;
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .stat-info .stat-value {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-top: 4px;
-        }
-
-        .content-card {
-            background: var(--surface);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-            border: 1px solid var(--border);
-        }
-
-        .badge-status {
-            padding: 4px 10px;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .badge-verified {
-            background: #dcfce7;
-            color: #15803d;
-        }
-
-        .badge-pending {
-            background: #fef9c3;
-            color: #a16207;
-        }
-
-        .badge-active {
-            background: #e0f2fe;
-            color: #0369a1;
-        }
-
-        .badge-revision {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-    </style>
+    <h:outputStylesheet library="css" name="index.css" />
 </h:head>
 
 <h:body>
     <div class="header-bar">
-        <div class="header-title">
-            <h:graphicImage library="images" name="logo.png" alt="Logo RSI Fatimah"
-                style="width: 42px; height: 42px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));" />
-            <span>RSI Fatimah Banyuwangi — Manajemen Keperawatan</span>
+        <div class="header-left">
+            <div class="header-title">
+                <h:graphicImage library="images" name="logo.png" alt="Logo RSI Fatimah"
+                    style="width: 42px; height: 42px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));" />
+                <span>RSI Fatimah Banyuwangi</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.xhtml" class="nav-link active"><i class="pi pi-file-edit"></i> Kelola Dokumen</a>
+                <a href="dashboard.xhtml" class="nav-link"><i class="pi pi-chart-bar"></i> Dashboard Analisis</a>
+            </div>
         </div>
         <div>
             <span style="font-size: 0.9rem; opacity: 0.9;">Jakarta EE 8 | JSF 2.3 | Payara 5.2022.5</span>
@@ -237,8 +92,7 @@
                     </p:commandButton>
                 </div>
 
-                <p:dataTable id="recentTable" var="doc" value="#{dashboardBean.recentDocuments}" stripedRows="true"
-                    responsiveLayout="scroll">
+                <p:dataTable id="recentTable" var="doc" value="#{dashboardBean.recentDocuments}" stripedRows="true">
 
                     <p:column headerText="Kategori" style="width: 140px;">
                         <span style="font-weight: 600;">#{doc.kategori}</span>
