@@ -1,196 +1,183 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:p="http://primefaces.org/ui">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/layout.xhtml">
 
-<h:head>
-    <f:facet name="first">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    </f:facet>
-    <title>Aplikasi Keperawatan - RSI Fatimah Banyuwangi</title>
+    <ui:define name="title">Kelola Dokumen - RSI Fatimah Banyuwangi</ui:define>
 
-    <h:outputStylesheet library="css" name="index.css" />
-</h:head>
+    <ui:define name="head">
+        <h:outputStylesheet library="css" name="index.css" />
+        <style>
+            /* Adjust container to fit sidebar layout without extra body margins */
+            .container {
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            .welcome-card {
+                margin-top: 0;
+            }
+        </style>
+    </ui:define>
 
-<h:body>
-    <div class="header-bar">
-        <div class="header-left">
-            <div class="header-title">
-                <h:graphicImage library="images" name="logo.png" alt="Logo RSI Fatimah"
-                    style="width: 42px; height: 42px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));" />
-                <span>RSI Fatimah Banyuwangi</span>
-            </div>
-            <div class="nav-links">
-                <a href="index.xhtml" class="nav-link active"><i class="pi pi-file-edit"></i> Kelola Dokumen</a>
-                <a href="dashboard.xhtml" class="nav-link"><i class="pi pi-chart-bar"></i> Dashboard Analisis</a>
-            </div>
-        </div>
-        <div>
-            <span style="font-size: 0.9rem; opacity: 0.9;">Jakarta EE 8 | JSF 2.3 | Payara 5.2022.5</span>
-        </div>
-    </div>
+    <ui:define name="pageTitle">
+        <i class="pi pi-file-edit" style="color: var(--primary); margin-right: 8px;"></i>
+        Kelola Dokumen Keperawatan
+    </ui:define>
 
-    <div class="container">
-        <h:form id="mainForm">
-            <p:growl id="messages" showDetail="true" />
+    <ui:define name="content">
+        <div class="container">
+            <h:form id="mainForm">
+                <p:growl id="messages" showDetail="true" />
 
-            <div class="welcome-card">
-                <h2 style="margin: 0 0 0.5rem 0; color: var(--primary);">#{dashboardBean.welcomeMessage}</h2>
-                <p style="margin: 0; color: var(--text-muted);">
-                    Project Magang POLIWANGI telah siap. Anda dapat mulai mengembangkan modul <b>Ijazah Karyawan</b>,
-                    <b>Regulasi Karyawan</b>, dan <b>Komite Keperawatan</b>.
-                </p>
-                <div style="margin-top: 1rem;">
-                    <p:commandButton value="Perbarui Data" icon="pi pi-refresh" action="#{dashboardBean.refreshData}"
-                        update="messages recentTable statsPanel" styleClass="p-button-outlined p-button-sm" />
-                </div>
-            </div>
-
-            <!-- Stats Ringkasan -->
-            <h:panelGroup id="statsPanel" layout="block" styleClass="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon blue">
-                        <i class="pi pi-id-card"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h4>Ijazah Karyawan</h4>
-                        <div class="stat-value">#{dashboardBean.totalIjazah}</div>
+                <div class="welcome-card">
+                    <h2 style="margin: 0 0 0.5rem 0; color: var(--primary);">#{dashboardBean.welcomeMessage}</h2>
+                    <p style="margin: 0; color: var(--text-muted);">
+                        Project Magang POLIWANGI telah siap. Anda dapat mulai mengembangkan modul <b>Ijazah Karyawan</b>,
+                        <b>Regulasi Karyawan</b>, dan <b>Komite Keperawatan</b>.
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <p:commandButton value="Perbarui Data" icon="pi pi-refresh" action="#{dashboardBean.refreshData}"
+                            update="messages recentTable statsPanel" styleClass="p-button-outlined p-button-sm" />
                     </div>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon emerald">
-                        <i class="pi pi-book"></i>
+                <!-- Stats Ringkasan -->
+                <h:panelGroup id="statsPanel" layout="block" styleClass="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="pi pi-id-card"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Ijazah Karyawan</h4>
+                            <div class="stat-value">#{dashboardBean.totalIjazah}</div>
+                        </div>
                     </div>
-                    <div class="stat-info">
-                        <h4>Regulasi / SPO</h4>
-                        <div class="stat-value">#{dashboardBean.totalRegulasi}</div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon emerald">
+                            <i class="pi pi-book"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Regulasi / SPO</h4>
+                            <div class="stat-value">#{dashboardBean.totalRegulasi}</div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon amber">
-                        <i class="pi pi-users"></i>
+                    <div class="stat-card">
+                        <div class="stat-icon amber">
+                            <i class="pi pi-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Komite Keperawatan</h4>
+                            <div class="stat-value">#{dashboardBean.totalKomite}</div>
+                        </div>
                     </div>
-                    <div class="stat-info">
-                        <h4>Komite Keperawatan</h4>
-                        <div class="stat-value">#{dashboardBean.totalKomite}</div>
-                    </div>
-                </div>
-            </h:panelGroup>
+                </h:panelGroup>
 
-            <!-- Tabel Dokumen Terkini -->
-            <div class="content-card">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-                    <h3 style="margin: 0;">Aktivitas Dokumen Terbaru</h3>
-                    <p:commandButton value="Tambah Dokumen" icon="pi pi-plus"
-                        actionListener="#{dashboardBean.prepareNewDocument}" update=":mainForm:manage-document-content"
-                        oncomplete="PF('manageDocumentDialog').show()" styleClass="p-button-success p-button-sm">
-                        <p:resetInput target=":mainForm:manage-document-content" />
-                    </p:commandButton>
-                </div>
-
-                <p:dataTable id="recentTable" var="doc" value="#{dashboardBean.recentDocuments}" stripedRows="true">
-
-                    <p:column headerText="Kategori" style="width: 140px;">
-                        <span style="font-weight: 600;">#{doc.kategori}</span>
-                    </p:column>
-
-                    <p:column headerText="Nama / Judul Dokumen">
-                        <h:outputText value="#{doc.namaDokumen}" />
-                    </p:column>
-
-                    <p:column headerText="Unit / Pemilik">
-                        <h:outputText value="#{doc.unitPengaju}" />
-                    </p:column>
-
-                    <p:column headerText="Status" style="width: 160px; text-align: center;">
-                        <span
-                            class="badge-status #{doc.status eq 'Terverifikasi' ? 'badge-verified' : (doc.status eq 'Menunggu Validasi' ? 'badge-pending' : (doc.status eq 'Aktif' ? 'badge-active' : 'badge-revision'))}">
-                            #{doc.status}
-                        </span>
-                    </p:column>
-
-                    <p:column headerText="Aksi" style="width: 120px; text-align: center;">
-                        <p:commandButton icon="pi pi-pencil" update=":mainForm:manage-document-content"
-                            oncomplete="PF('manageDocumentDialog').show()" action="#{dashboardBean.prepareEdit(doc)}"
-                            styleClass="edit-button p-button-rounded p-button-success p-button-text p-button-sm"
-                            process="@this">
+                <!-- Tabel Dokumen Terkini -->
+                <div class="content-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                        <h3 style="margin: 0;">Aktivitas Dokumen Terbaru</h3>
+                        <p:commandButton value="Tambah Dokumen" icon="pi pi-plus"
+                            actionListener="#{dashboardBean.prepareNewDocument}" update=":mainForm:manage-document-content"
+                            oncomplete="PF('manageDocumentDialog').show()" styleClass="p-button-success p-button-sm">
                             <p:resetInput target=":mainForm:manage-document-content" />
                         </p:commandButton>
-                        <p:commandButton icon="pi pi-trash" action="#{dashboardBean.deleteDocument(doc)}"
-                            update=":mainForm:messages :mainForm:recentTable :mainForm:statsPanel"
-                            styleClass="p-button-rounded p-button-danger p-button-text p-button-sm" process="@this">
-                            <p:confirm header="Konfirmasi Hapus"
-                                message="Apakah Anda yakin ingin menghapus dokumen ini?"
-                                icon="pi pi-exclamation-triangle" />
-                        </p:commandButton>
-                    </p:column>
-                </p:dataTable>
-            </div>
+                    </div>
 
-            <!-- Dialog Form CRUD -->
-            <p:dialog header="Detail Dokumen" showEffect="fade" modal="true" widgetVar="manageDocumentDialog"
-                responsive="true" style="width: 450px;">
-                <p:outputPanel id="manage-document-content" class="ui-fluid">
-                    <h:panelGroup rendered="#{not empty dashboardBean.selectedDocument}">
-                        <div class="field" style="margin-bottom: 1.25rem;">
-                            <p:outputLabel for="kategori"
-                                style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Kategori
-                            </p:outputLabel>
-                            <p:selectOneMenu id="kategori" value="#{dashboardBean.selectedDocument.kategori}"
-                                required="true">
-                                <f:selectItem itemLabel="Ijazah" itemValue="Ijazah" />
-                                <f:selectItem itemLabel="Regulasi" itemValue="Regulasi" />
-                                <f:selectItem itemLabel="Komite Keperawatan" itemValue="Komite Keperawatan" />
-                            </p:selectOneMenu>
-                        </div>
-                        <div class="field" style="margin-bottom: 1.25rem;">
-                            <p:outputLabel for="nama" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">
-                                Nama / Judul Dokumen</p:outputLabel>
-                            <p:inputText id="nama" value="#{dashboardBean.selectedDocument.namaDokumen}" required="true"
-                                requiredMessage="Nama dokumen wajib diisi" />
-                        </div>
-                        <div class="field" style="margin-bottom: 1.25rem;">
-                            <p:outputLabel for="unit" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">
-                                Unit / Pemilik</p:outputLabel>
-                            <p:inputText id="unit" value="#{dashboardBean.selectedDocument.unitPengaju}" required="true"
-                                requiredMessage="Unit / pemilik wajib diisi" />
-                        </div>
-                        <div class="field" style="margin-bottom: 1.5rem;">
-                            <p:outputLabel for="status"
-                                style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Status</p:outputLabel>
-                            <p:selectOneMenu id="status" value="#{dashboardBean.selectedDocument.status}"
-                                required="true">
-                                <f:selectItem itemLabel="Terverifikasi" itemValue="Terverifikasi" />
-                                <f:selectItem itemLabel="Menunggu Validasi" itemValue="Menunggu Validasi" />
-                                <f:selectItem itemLabel="Aktif" itemValue="Aktif" />
-                                <f:selectItem itemLabel="Revisi" itemValue="Revisi" />
-                            </p:selectOneMenu>
-                        </div>
-                    </h:panelGroup>
-                </p:outputPanel>
+                    <p:dataTable id="recentTable" var="doc" value="#{dashboardBean.recentDocuments}" stripedRows="true">
 
-                <f:facet name="footer">
-                    <p:commandButton value="Simpan" icon="pi pi-check" actionListener="#{dashboardBean.saveDocument}"
-                        update="manage-document-content recentTable statsPanel messages"
-                        process="manage-document-content @this"
-                        oncomplete="if (!args.validationFailed) PF('manageDocumentDialog').hide()"
-                        styleClass="p-button-success" />
-                    <p:commandButton value="Batal" icon="pi pi-times" onclick="PF('manageDocumentDialog').hide()"
-                        class="ui-button-secondary" type="button" styleClass="p-button-outlined" />
-                </f:facet>
-            </p:dialog>
+                        <p:column headerText="Kategori" style="width: 140px;">
+                            <span style="font-weight: 600;">#{doc.kategori}</span>
+                        </p:column>
 
-            <!-- Confirmation Dialog -->
-            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                <p:commandButton value="Tidak" type="button" styleClass="ui-confirmdialog-no p-button-outlined" />
-                <p:commandButton value="Ya, Hapus" type="button" styleClass="ui-confirmdialog-yes p-button-danger" />
-            </p:confirmDialog>
-        </h:form>
-    </div>
-</h:body>
+                        <p:column headerText="Nama / Judul Dokumen">
+                            <h:outputText value="#{doc.namaDokumen}" />
+                        </p:column>
 
-</html>
+                        <p:column headerText="Unit / Pemilik">
+                            <h:outputText value="#{doc.unitPengaju}" />
+                        </p:column>
+
+                        <p:column headerText="Status" style="width: 160px; text-align: center;">
+                            <span class="badge-status #{doc.status eq 'Terverifikasi' ? 'badge-verified' : (doc.status eq 'Menunggu Validasi' ? 'badge-pending' : (doc.status eq 'Aktif' ? 'badge-active' : 'badge-revision'))}">
+                                #{doc.status}
+                            </span>
+                        </p:column>
+
+                        <p:column headerText="Aksi" style="width: 120px; text-align: center;">
+                            <p:commandButton icon="pi pi-pencil" update=":mainForm:manage-document-content"
+                                oncomplete="PF('manageDocumentDialog').show()" action="#{dashboardBean.prepareEdit(doc)}"
+                                styleClass="edit-button p-button-rounded p-button-success p-button-text p-button-sm"
+                                process="@this">
+                                <p:resetInput target=":mainForm:manage-document-content" />
+                            </p:commandButton>
+                            <p:commandButton icon="pi pi-trash" action="#{dashboardBean.deleteDocument(doc)}"
+                                update=":mainForm:messages :mainForm:recentTable :mainForm:statsPanel"
+                                styleClass="p-button-rounded p-button-danger p-button-text p-button-sm" process="@this">
+                                <p:confirm header="Konfirmasi Hapus"
+                                    message="Apakah Anda yakin ingin menghapus dokumen ini?"
+                                    icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+
+                <!-- Dialog Form CRUD -->
+                <p:dialog header="Detail Dokumen" showEffect="fade" modal="true" widgetVar="manageDocumentDialog"
+                    responsive="true" style="width: 450px;">
+                    <p:outputPanel id="manage-document-content" class="ui-fluid">
+                        <h:panelGroup rendered="#{not empty dashboardBean.selectedDocument}">
+                            <div class="field" style="margin-bottom: 1.25rem;">
+                                <p:outputLabel for="kategori" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Kategori</p:outputLabel>
+                                <p:selectOneMenu id="kategori" value="#{dashboardBean.selectedDocument.kategori}" required="true">
+                                    <f:selectItem itemLabel="Ijazah" itemValue="Ijazah" />
+                                    <f:selectItem itemLabel="Regulasi" itemValue="Regulasi" />
+                                    <f:selectItem itemLabel="Komite Keperawatan" itemValue="Komite Keperawatan" />
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="field" style="margin-bottom: 1.25rem;">
+                                <p:outputLabel for="nama" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Nama / Judul Dokumen</p:outputLabel>
+                                <p:inputText id="nama" value="#{dashboardBean.selectedDocument.namaDokumen}" required="true"
+                                    requiredMessage="Nama dokumen wajib diisi" />
+                            </div>
+                            <div class="field" style="margin-bottom: 1.25rem;">
+                                <p:outputLabel for="unit" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Unit / Pemilik</p:outputLabel>
+                                <p:inputText id="unit" value="#{dashboardBean.selectedDocument.unitPengaju}" required="true"
+                                    requiredMessage="Unit / pemilik wajib diisi" />
+                            </div>
+                            <div class="field" style="margin-bottom: 1.5rem;">
+                                <p:outputLabel for="status" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Status</p:outputLabel>
+                                <p:selectOneMenu id="status" value="#{dashboardBean.selectedDocument.status}" required="true">
+                                    <f:selectItem itemLabel="Terverifikasi" itemValue="Terverifikasi" />
+                                    <f:selectItem itemLabel="Menunggu Validasi" itemValue="Menunggu Validasi" />
+                                    <f:selectItem itemLabel="Aktif" itemValue="Aktif" />
+                                    <f:selectItem itemLabel="Revisi" itemValue="Revisi" />
+                                </p:selectOneMenu>
+                            </div>
+                        </h:panelGroup>
+                    </p:outputPanel>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Simpan" icon="pi pi-check" actionListener="#{dashboardBean.saveDocument}"
+                            update="manage-document-content recentTable statsPanel messages"
+                            process="manage-document-content @this"
+                            oncomplete="if (!args.validationFailed) PF('manageDocumentDialog').hide()"
+                            styleClass="p-button-success" />
+                        <p:commandButton value="Batal" icon="pi pi-times" onclick="PF('manageDocumentDialog').hide()"
+                            class="ui-button-secondary" type="button" styleClass="p-button-outlined" />
+                    </f:facet>
+                </p:dialog>
+
+                <!-- Confirmation Dialog -->
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                    <p:commandButton value="Tidak" type="button" styleClass="ui-confirmdialog-no p-button-outlined" />
+                    <p:commandButton value="Ya, Hapus" type="button" styleClass="ui-confirmdialog-yes p-button-danger" />
+                </p:confirmDialog>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

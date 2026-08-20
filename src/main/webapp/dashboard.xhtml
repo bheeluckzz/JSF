@@ -1,166 +1,153 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/layout.xhtml">
 
-<h:head>
-    <f:facet name="first">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description" content="Dashboard Analisis dan Visualisasi Data Dokumen Keperawatan - RSI Fatimah Banyuwangi" />
-    </f:facet>
-    <title>Dashboard Analisis - RSI Fatimah Banyuwangi</title>
+    <ui:define name="title">Dashboard Analisis - RSI Fatimah Banyuwangi</ui:define>
 
-    <h:outputStylesheet library="css" name="dashboard.css" />
-</h:head>
+    <ui:define name="head">
+        <h:outputStylesheet library="css" name="dashboard.css" />
+        <style>
+            /* Adjust container to fit sidebar layout without extra body margins */
+            .container {
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </ui:define>
 
-<h:body>
-    <div class="header-bar">
-        <div class="header-left">
-            <div class="header-title">
-                <h:graphicImage library="images" name="logo.png" alt="Logo RSI Fatimah"
-                    style="width: 42px; height: 42px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));" />
-                <span>RSI Fatimah Banyuwangi</span>
-            </div>
-            <div class="nav-links">
-                <a href="index.xhtml" class="nav-link"><i class="pi pi-file-edit"></i> Kelola Dokumen</a>
-                <a href="dashboard.xhtml" class="nav-link active"><i class="pi pi-chart-bar"></i> Dashboard Analisis</a>
-            </div>
-        </div>
-        <div>
-            <span style="font-size: 0.9rem; opacity: 0.9;">Jakarta EE 8 | JSF 2.3 | Payara 5.2022.5</span>
-        </div>
-    </div>
+    <ui:define name="pageTitle">
+        <i class="pi pi-chart-line" style="color: var(--primary); margin-right: 8px;"></i>
+        Dashboard Analisis &amp; Sebaran Dokumen
+    </ui:define>
 
-    <div class="container">
-        <h:form id="dashboardForm">
-            <p:growl id="messages" showDetail="true" />
+    <ui:define name="content">
+        <div class="container">
+            <h:form id="dashboardForm">
+                <p:growl id="messages" showDetail="true" />
 
-            <!-- Page Title -->
-            <div style="margin-bottom: 2rem;">
-                <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text);">
-                    <i class="pi pi-chart-line" style="color: var(--primary); margin-right: 10px;"></i>
-                    Dashboard Analisis &amp; Sebaran Dokumen
-                </h1>
-                <p style="margin: 4px 0 0 0; color: var(--text-muted);">
-                    Visualisasi data dokumen karyawan, regulasi keperawatan, dan status validasi ter-update.
-                </p>
-            </div>
+                <!-- Page Subtitle -->
+                <div style="margin-bottom: 2rem; margin-top: -1rem;">
+                    <p style="margin: 4px 0 0 0; color: var(--text-muted);">
+                        Visualisasi data dokumen karyawan, regulasi keperawatan, dan status validasi ter-update.
+                    </p>
+                </div>
 
-            <!-- Stats Ringkasan -->
-            <h:panelGroup id="statsPanel" layout="block" styleClass="stats-grid">
-                <!-- Total Dokumen -->
-                <div class="stat-card">
-                    <div class="stat-icon purple">
-                        <i class="pi pi-folder"></i>
+                <!-- Stats Ringkasan -->
+                <h:panelGroup id="statsPanel" layout="block" styleClass="stats-grid">
+                    <!-- Total Dokumen -->
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="pi pi-folder"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Total Seluruh Dokumen</h4>
+                            <div class="stat-value">#{dashboardBean.totalDocuments}</div>
+                        </div>
                     </div>
-                    <div class="stat-info">
-                        <h4>Total Seluruh Dokumen</h4>
-                        <div class="stat-value">#{dashboardBean.totalDocuments}</div>
+
+                    <!-- Ijazah Karyawan -->
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="pi pi-id-card"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Ijazah Karyawan</h4>
+                            <div class="stat-value">#{dashboardBean.totalIjazah}</div>
+                        </div>
+                    </div>
+
+                    <!-- Regulasi / SPO -->
+                    <div class="stat-card">
+                        <div class="stat-icon emerald">
+                            <i class="pi pi-book"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Regulasi / SPO</h4>
+                            <div class="stat-value">#{dashboardBean.totalRegulasi}</div>
+                        </div>
+                    </div>
+
+                    <!-- Komite Keperawatan -->
+                    <div class="stat-card">
+                        <div class="stat-icon amber">
+                            <i class="pi pi-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Komite Keperawatan</h4>
+                            <div class="stat-value">#{dashboardBean.totalKomite}</div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <!-- Charts Section -->
+                <div class="chart-grid">
+                    <div class="content-card">
+                        <h3 style="margin-top: 0; margin-bottom: 1.5rem; color: var(--text); font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                            <i class="pi pi-chart-pie" style="color: var(--primary);"></i>
+                            Distribusi Kategori Dokumen
+                        </h3>
+                        <div style="height: 320px; display: flex; align-items: center; justify-content: center;">
+                            <p:pieChart model="#{dashboardBean.categoryChartModel}" style="width: 100%; height: 100%;" />
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <h3 style="margin-top: 0; margin-bottom: 1.5rem; color: var(--text); font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                            <i class="pi pi-chart-bar" style="color: var(--success);"></i>
+                            Status Validasi Dokumen
+                        </h3>
+                        <div style="height: 320px; display: flex; align-items: center; justify-content: center;">
+                            <p:barChart model="#{dashboardBean.statusChartModel}" style="width: 100%; height: 100%;" />
+                        </div>
                     </div>
                 </div>
 
-                <!-- Ijazah Karyawan -->
-                <div class="stat-card">
-                    <div class="stat-icon blue">
-                        <i class="pi pi-id-card"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h4>Ijazah Karyawan</h4>
-                        <div class="stat-value">#{dashboardBean.totalIjazah}</div>
-                    </div>
-                </div>
-
-                <!-- Regulasi / SPO -->
-                <div class="stat-card">
-                    <div class="stat-icon emerald">
-                        <i class="pi pi-book"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h4>Regulasi / SPO</h4>
-                        <div class="stat-value">#{dashboardBean.totalRegulasi}</div>
-                    </div>
-                </div>
-
-                <!-- Komite Keperawatan -->
-                <div class="stat-card">
-                    <div class="stat-icon amber">
-                        <i class="pi pi-users"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h4>Komite Keperawatan</h4>
-                        <div class="stat-value">#{dashboardBean.totalKomite}</div>
-                    </div>
-                </div>
-            </h:panelGroup>
-
-            <!-- Charts Section -->
-            <div class="chart-grid">
+                <!-- Data Table Search Section -->
                 <div class="content-card">
-                    <h3 style="margin-top: 0; margin-bottom: 1.5rem; color: var(--text); font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
-                        <i class="pi pi-chart-pie" style="color: var(--primary);"></i>
-                        Distribusi Kategori Dokumen
-                    </h3>
-                    <div style="height: 320px; display: flex; align-items: center; justify-content: center;">
-                        <p:pieChart model="#{dashboardBean.categoryChartModel}" style="width: 100%; height: 100%;" />
-                    </div>
-                </div>
-
-                <div class="content-card">
-                    <h3 style="margin-top: 0; margin-bottom: 1.5rem; color: var(--text); font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
-                        <i class="pi pi-chart-bar" style="color: var(--success);"></i>
-                        Status Validasi Dokumen
-                    </h3>
-                    <div style="height: 320px; display: flex; align-items: center; justify-content: center;">
-                        <p:barChart model="#{dashboardBean.statusChartModel}" style="width: 100%; height: 100%;" />
-                    </div>
-                </div>
-            </div>
-
-            <!-- Data Table Search Section -->
-            <div class="content-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
-                    <h2 id="tableHeading" style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text);">Daftar Seluruh Dokumen</h2>
-                    <span class="ui-input-icon-left">
-                        <i class="pi pi-search" />
-                        <p:inputText id="globalFilter" onkeyup="PF('docsTable').filter()" style="width: 280px; border-radius: 20px; padding-left: 2.25rem;" placeholder="Cari dokumen, kategori, atau unit..." />
-                    </span>
-                </div>
-
-                <p:dataTable id="docsTableId" var="doc" value="#{dashboardBean.recentDocuments}" 
-                             widgetVar="docsTable" 
-                             filteredValue="#{dashboardBean.filteredDocuments}"
-                             emptyMessage="Tidak ada data dokumen yang cocok" 
-                             stripedRows="true" 
-                             rows="10" 
-                             paginator="true" 
-                             paginatorPosition="bottom"
-                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                             currentPageReportTemplate="{startRecord}-{endRecord} dari {totalRecords} data"
-                             rowsPerPageTemplate="5,10,20">
-
-                    <p:column headerText="Kategori" filterBy="#{doc.kategori}" filterStyle="display:none" style="width: 180px;">
-                        <span style="font-weight: 600;">#{doc.kategori}</span>
-                    </p:column>
-
-                    <p:column headerText="Nama / Judul Dokumen" filterBy="#{doc.namaDokumen}" filterStyle="display:none">
-                        <h:outputText value="#{doc.namaDokumen}" />
-                    </p:column>
-
-                    <p:column headerText="Unit / Pemilik" filterBy="#{doc.unitPengaju}" filterStyle="display:none">
-                        <h:outputText value="#{doc.unitPengaju}" />
-                    </p:column>
-
-                    <p:column headerText="Status" filterBy="#{doc.status}" filterStyle="display:none" style="width: 180px; text-align: center;">
-                        <span class="badge-status #{doc.status eq 'Terverifikasi' ? 'badge-verified' : (doc.status eq 'Menunggu Validasi' ? 'badge-pending' : (doc.status eq 'Aktif' ? 'badge-active' : 'badge-revision'))}">
-                            #{doc.status}
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+                        <h2 id="tableHeading" style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text);">Daftar Seluruh Dokumen</h2>
+                        <span class="ui-input-icon-left">
+                            <i class="pi pi-search" />
+                            <p:inputText id="globalFilter" onkeyup="PF('docsTable').filter()" style="width: 280px; border-radius: 20px; padding-left: 2.25rem;" placeholder="Cari dokumen, kategori, atau unit..." />
                         </span>
-                    </p:column>
-                </p:dataTable>
-            </div>
-        </h:form>
-    </div>
-</h:body>
-</html>
+                    </div>
+
+                    <p:dataTable id="docsTableId" var="doc" value="#{dashboardBean.recentDocuments}" 
+                                 widgetVar="docsTable" 
+                                 filteredValue="#{dashboardBean.filteredDocuments}"
+                                 emptyMessage="Tidak ada data dokumen yang cocok" 
+                                 stripedRows="true" 
+                                 rows="10" 
+                                 paginator="true" 
+                                 paginatorPosition="bottom"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} dari {totalRecords} data"
+                                 rowsPerPageTemplate="5,10,20">
+
+                        <p:column headerText="Kategori" filterBy="#{doc.kategori}" filterStyle="display:none" style="width: 180px;">
+                            <span style="font-weight: 600;">#{doc.kategori}</span>
+                        </p:column>
+
+                        <p:column headerText="Nama / Judul Dokumen" filterBy="#{doc.namaDokumen}" filterStyle="display:none">
+                            <h:outputText value="#{doc.namaDokumen}" />
+                        </p:column>
+
+                        <p:column headerText="Unit / Pemilik" filterBy="#{doc.unitPengaju}" filterStyle="display:none">
+                            <h:outputText value="#{doc.unitPengaju}" />
+                        </p:column>
+
+                        <p:column headerText="Status" filterBy="#{doc.status}" filterStyle="display:none" style="width: 180px; text-align: center;">
+                            <span class="badge-status #{doc.status eq 'Terverifikasi' ? 'badge-verified' : (doc.status eq 'Menunggu Validasi' ? 'badge-pending' : (doc.status eq 'Aktif' ? 'badge-active' : 'badge-revision'))}">
+                                #{doc.status}
+                            </span>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

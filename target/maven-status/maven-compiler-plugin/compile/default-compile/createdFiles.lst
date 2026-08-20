@@ -1,2 +1,5 @@
+com\rsifatimah\keperawatan\bean\AuthBean.class
 com\rsifatimah\keperawatan\bean\DashboardBean.class
+com\rsifatimah\keperawatan\filter\LoginFilter.class
 com\rsifatimah\keperawatan\bean\DashboardBean$DokumenSummary.class
+com\rsifatimah\keperawatan\bean\AuthBean$User.class

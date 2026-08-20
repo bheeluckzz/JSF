@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <f:facet name="first">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    </f:facet>
+    <title>Masuk / Daftar - Aplikasi Keperawatan</title>
+    <h:outputStylesheet library="css" name="login.css" />
+</h:head>
+
+<h:body>
+    <div class="login-container">
+        <div class="login-card animate__animated animate__fadeIn">
+            <div class="logo-section">
+                <h:graphicImage library="images" name="logo.png" alt="Logo RSI Fatimah" styleClass="logo" />
+                <h1 class="title">RSI Fatimah</h1>
+                <p class="subtitle">Sistem Informasi Keperawatan</p>
+            </div>
+
+            <h:form id="authForm">
+                <p:growl id="growl" showDetail="true" life="4000" />
+
+                <p:outputPanel id="authPanel">
+                    <!-- LOGIN PANEL -->
+                    <h:panelGroup id="loginPanel" rendered="#{not authBean.showRegister}">
+                        <div class="form-group">
+                            <h:outputLabel for="loginUsername" value="Username" styleClass="form-label" />
+                            <div class="input-with-icon">
+                                <i class="pi pi-user" />
+                                <p:inputText id="loginUsername" value="#{authBean.username}" 
+                                             placeholder="Masukkan username Anda" required="true" 
+                                             requiredMessage="Username wajib diisi" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="loginPassword" value="Password" styleClass="form-label" />
+                            <div class="input-with-icon">
+                                <i class="pi pi-lock" />
+                                <p:password id="loginPassword" value="#{authBean.password}" 
+                                            placeholder="Masukkan password Anda" required="true" 
+                                            requiredMessage="Password wajib diisi" feedback="false" />
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 2rem;">
+                            <p:commandButton value="Masuk" action="#{authBean.login}" 
+                                             update="growl" styleClass="btn-primary" />
+                        </div>
+
+                        <div class="toggle-link-container">
+                            <p:commandButton value="Belum punya akun? Daftar disini" 
+                                             actionListener="#{authBean.toggleForm}" 
+                                             update="authPanel" process="@this" styleClass="toggle-link" />
+                        </div>
+                    </h:panelGroup>
+
+                    <!-- REGISTER PANEL -->
+                    <h:panelGroup id="registerPanel" rendered="#{authBean.showRegister}">
+                        <div class="form-group">
+                            <h:outputLabel for="regFullName" value="Nama Lengkap" styleClass="form-label" />
+                            <div class="input-with-icon">
+                                <i class="pi pi-id-card" />
+                                <p:inputText id="regFullName" value="#{authBean.fullName}" 
+                                             placeholder="Masukkan nama lengkap" required="true" 
+                                             requiredMessage="Nama lengkap wajib diisi" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="regUsername" value="Username Baru" styleClass="form-label" />
+                            <div class="input-with-icon">
+                                <i class="pi pi-user" />
+                                <p:inputText id="regUsername" value="#{authBean.username}" 
+                                             placeholder="Pilih username unik" required="true" 
+                                             requiredMessage="Username wajib diisi" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="regPassword" value="Password Baru" styleClass="form-label" />
+                            <div class="input-with-icon">
+                                <i class="pi pi-lock" />
+                                <p:password id="regPassword" value="#{authBean.password}" 
+                                            placeholder="Buat password aman" required="true" 
+                                            requiredMessage="Password wajib diisi" feedback="false" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="regRole" value="Role / Jabatan" styleClass="form-label" />
+                            <p:selectOneMenu id="regRole" value="#{authBean.role}" required="true" 
+                                             requiredMessage="Role wajib dipilih" style="width: 100%; box-sizing: border-box;">
+                                <f:selectItem itemLabel="Pilih Role" itemValue="" noSelectionOption="true" />
+                                <f:selectItem itemLabel="Staf Keperawatan" itemValue="Staf Keperawatan" />
+                                <f:selectItem itemLabel="Staf SDI" itemValue="Staf SDI" />
+                            </p:selectOneMenu>
+                        </div>
+
+                        <div style="margin-top: 2rem;">
+                            <p:commandButton value="Daftar Sekarang" action="#{authBean.register}" 
+                                             update="growl" styleClass="btn-success" />
+                        </div>
+
+                        <div class="toggle-link-container">
+                            <p:commandButton value="Sudah punya akun? Login disini" 
+                                             actionListener="#{authBean.toggleForm}" 
+                                             update="authPanel" process="@this" styleClass="toggle-link" />
+                        </div>
+                    </h:panelGroup>
+                </p:outputPanel>
+            </h:form>
+        </div>
+    </div>
+</h:body>
+</html>

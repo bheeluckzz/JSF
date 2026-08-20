@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <f:facet name="first">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    </f:facet>
+    <title><ui:insert name="title">Aplikasi Keperawatan - RSI Fatimah</ui:insert></title>
+    
+    <h:outputStylesheet library="css" name="layout.css" />
+    <ui:insert name="head"></ui:insert>
+</h:head>
+
+<h:body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <div class="brand">
+                    <h:graphicImage library="images" name="logo.png" alt="Logo RSI Fatimah" styleClass="brand-logo" />
+                    <div class="brand-text">
+                        <span class="brand-name">RSI Fatimah</span>
+                        <span class="brand-sub">Banyuwangi</span>
+                    </div>
+                </div>
+                
+                <nav class="nav-menu">
+                    <h:link outcome="dashboard" styleClass="nav-item #{view.viewId.contains('dashboard') ? 'active' : ''}">
+                        <i class="pi pi-chart-bar"></i>
+                        <span>Dashboard Analisis</span>
+                    </h:link>
+                    <h:link outcome="index" styleClass="nav-item #{view.viewId.contains('index') ? 'active' : ''}">
+                        <i class="pi pi-file-edit"></i>
+                        <span>Kelola Dokumen</span>
+                    </h:link>
+                </nav>
+            </div>
+            
+            <div class="sidebar-bottom">
+                <div class="user-profile">
+                    <div class="avatar">
+                        <i class="pi pi-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name">#{not empty authBean.loggedUser ? authBean.loggedUser.fullName : 'Admin Keperawatan'}</span>
+                        <span class="user-role">#{not empty authBean.loggedUser ? authBean.loggedUser.role : 'Staf Keperawatan'}</span>
+                    </div>
+                </div>
+                <h:form id="logoutForm">
+                    <p:commandLink action="#{authBean.logout}" styleClass="logout-btn" process="@this">
+                        <i class="pi pi-sign-out"></i>
+                        <span>Keluar</span>
+                    </p:commandLink>
+                </h:form>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h1 class="page-title"><ui:insert name="pageTitle">Halaman Utama</ui:insert></h1>
+                </div>
+                <div class="topbar-right">
+                    <span class="server-info">Jakarta EE 8 | JSF 2.3 | Payara 5.2022.5</span>
+                </div>
+            </header>
+            
+            <!-- Page Body -->
+            <div class="content-body">
+                <ui:insert name="content"></ui:insert>
+            </div>
+        </main>
+    </div>
+</h:body>
+</html>

@@ -47,7 +47,7 @@ public class DashboardBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        this.welcomeMessage = "Sistem Informasi Keperawatan & SDM - RSI Fatimah";
+        this.welcomeMessage = "Sistem Informasi Keperawatan & SDI - RSI Fatimah";
         this.recentDocuments = loadDocumentsFromFile();
         calculateStats();
     }
