@@ -1,20 +1,16 @@
 package com.rsifatimah.keperawatan.bean;
 
+import com.rsifatimah.keperawatan.dao.DokumenDAO;
+
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import java.io.File;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
 import org.primefaces.model.charts.ChartData;
 import org.primefaces.model.charts.pie.PieChartModel;
 import org.primefaces.model.charts.pie.PieChartDataSet;
@@ -24,13 +20,11 @@ import org.primefaces.model.charts.bar.BarChartOptions;
 import org.primefaces.model.charts.axes.cartesian.CartesianScales;
 import org.primefaces.model.charts.axes.cartesian.linear.CartesianLinearAxes;
 
-
 @Named("dashboardBean")
 @ViewScoped
 public class DashboardBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private static final String DATA_FILE = "documents.json";
 
     private String welcomeMessage;
     private int totalIjazah;
@@ -45,18 +39,33 @@ public class DashboardBean implements Serializable {
     private boolean isNew;
     private List<DokumenSummary> filteredDocuments;
 
+    private transient DokumenDAO dokumenDAO;
+
     @PostConstruct
     public void init() {
         this.welcomeMessage = "Sistem Informasi Keperawatan & SDI - RSI Fatimah";
-        this.recentDocuments = loadDocumentsFromFile();
+        loadDataFromDatabase();
+    }
+
+    private DokumenDAO getDokumenDAO() {
+        if (dokumenDAO == null) {
+            dokumenDAO = new DokumenDAO();
+        }
+        return dokumenDAO;
+    }
+
+    private void loadDataFromDatabase() {
+        this.recentDocuments = getDokumenDAO().findAll();
+        if (this.recentDocuments == null) {
+            this.recentDocuments = new ArrayList<>();
+        }
         calculateStats();
     }
 
     public void refreshData() {
-        this.recentDocuments = loadDocumentsFromFile();
-        calculateStats();
+        loadDataFromDatabase();
         FacesContext.getCurrentInstance().addMessage(null, 
-            new FacesMessage(FacesMessage.SEVERITY_INFO, "Sukses", "Data dashboard berhasil diperbarui!"));
+            new FacesMessage(FacesMessage.SEVERITY_INFO, "Sukses", "Data dashboard berhasil disinkronkan dengan database PostgreSQL!"));
     }
 
     public void prepareNewDocument() {
@@ -73,26 +82,40 @@ public class DashboardBean implements Serializable {
         if (selectedDocument == null) return;
 
         if (isNew) {
-            this.recentDocuments.add(selectedDocument);
-            FacesContext.getCurrentInstance().addMessage(null, 
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Sukses", "Dokumen baru berhasil ditambahkan!"));
+            boolean success = getDokumenDAO().insert(selectedDocument);
+            if (success) {
+                FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sukses", "Dokumen baru berhasil disimpan ke database PostgreSQL!"));
+            } else {
+                FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Gagal", "Gagal menyimpan dokumen ke database."));
+            }
         } else {
-            FacesContext.getCurrentInstance().addMessage(null, 
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Sukses", "Dokumen berhasil diperbarui!"));
+            boolean success = getDokumenDAO().update(selectedDocument);
+            if (success) {
+                FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sukses", "Dokumen berhasil diperbarui di database PostgreSQL!"));
+            } else {
+                FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Gagal", "Gagal memperbarui dokumen di database."));
+            }
         }
 
-        saveDocumentsToFile();
-        calculateStats();
+        loadDataFromDatabase();
         this.selectedDocument = null;
     }
 
     public void deleteDocument(DokumenSummary doc) {
-        if (doc != null) {
-            this.recentDocuments.remove(doc);
-            saveDocumentsToFile();
-            calculateStats();
-            FacesContext.getCurrentInstance().addMessage(null, 
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Sukses", "Dokumen berhasil dihapus!"));
+        if (doc != null && doc.getId() != null) {
+            boolean success = getDokumenDAO().delete(doc.getId());
+            if (success) {
+                FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sukses", "Dokumen berhasil dihapus dari database PostgreSQL!"));
+            } else {
+                FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Gagal", "Gagal menghapus dokumen dari database."));
+            }
+            loadDataFromDatabase();
         }
     }
 
@@ -101,20 +124,22 @@ public class DashboardBean implements Serializable {
         int regulasi = 0;
         int komite = 0;
 
-        for (DokumenSummary doc : recentDocuments) {
-            if ("Ijazah".equalsIgnoreCase(doc.getKategori())) {
-                ijazah++;
-            } else if ("Regulasi".equalsIgnoreCase(doc.getKategori())) {
-                regulasi++;
-            } else if ("Komite Keperawatan".equalsIgnoreCase(doc.getKategori()) || "Komite".equalsIgnoreCase(doc.getKategori())) {
-                komite++;
+        if (recentDocuments != null) {
+            for (DokumenSummary doc : recentDocuments) {
+                if ("Ijazah".equalsIgnoreCase(doc.getKategori())) {
+                    ijazah++;
+                } else if ("Regulasi".equalsIgnoreCase(doc.getKategori())) {
+                    regulasi++;
+                } else if ("Komite Keperawatan".equalsIgnoreCase(doc.getKategori()) || "Komite".equalsIgnoreCase(doc.getKategori())) {
+                    komite++;
+                }
             }
         }
 
         this.totalIjazah = ijazah;
         this.totalRegulasi = regulasi;
         this.totalKomite = komite;
-        this.totalDocuments = recentDocuments.size();
+        this.totalDocuments = (recentDocuments != null) ? recentDocuments.size() : 0;
 
         createChartModels();
     }
@@ -163,15 +188,17 @@ public class DashboardBean implements Serializable {
         int aktif = 0;
         int revisi = 0;
 
-        for (DokumenSummary doc : recentDocuments) {
-            if ("Terverifikasi".equalsIgnoreCase(doc.getStatus())) {
-                terverifikasi++;
-            } else if ("Menunggu Validasi".equalsIgnoreCase(doc.getStatus())) {
-                pending++;
-            } else if ("Aktif".equalsIgnoreCase(doc.getStatus())) {
-                aktif++;
-            } else if ("Revisi".equalsIgnoreCase(doc.getStatus())) {
-                revisi++;
+        if (recentDocuments != null) {
+            for (DokumenSummary doc : recentDocuments) {
+                if ("Terverifikasi".equalsIgnoreCase(doc.getStatus())) {
+                    terverifikasi++;
+                } else if ("Menunggu Validasi".equalsIgnoreCase(doc.getStatus())) {
+                    pending++;
+                } else if ("Aktif".equalsIgnoreCase(doc.getStatus())) {
+                    aktif++;
+                } else if ("Revisi".equalsIgnoreCase(doc.getStatus())) {
+                    revisi++;
+                }
             }
         }
 
@@ -208,50 +235,6 @@ public class DashboardBean implements Serializable {
         cScales.addYAxesData(linearAxes);
         options.setScales(cScales);
         statusChartModel.setOptions(options);
-    }
-
-    private List<DokumenSummary> loadDocumentsFromFile() {
-        File file = new File(DATA_FILE);
-        if (file.exists()) {
-            try {
-                String content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-                Jsonb jsonb = JsonbBuilder.create();
-                DokumenSummary[] array = jsonb.fromJson(content, DokumenSummary[].class);
-                List<DokumenSummary> list = new ArrayList<>();
-                if (array != null) {
-                    for (DokumenSummary doc : array) {
-                        list.add(doc);
-                    }
-                }
-                return list;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        // Default initial data
-        List<DokumenSummary> list = new ArrayList<>();
-        list.add(new DokumenSummary("Ijazah", "Ns. Ahmad Fauzi, S.Kep", "STR & Ijazah Ners", "Terverifikasi"));
-        list.add(new DokumenSummary("Regulasi", "SPO Penanganan Pasien Kritis", "Komite Keperawatan", "Aktif"));
-        list.add(new DokumenSummary("Ijazah", "Siti Nurhaliza, A.Md.Kep", "Ijazah D3 Keperawatan", "Menunggu Validasi"));
-        list.add(new DokumenSummary("Regulasi", "Panduan Kredensial Perawat 2026", "SDM & Komite", "Revisi"));
-
-        saveDocumentsToFile(list);
-        return list;
-    }
-
-    private void saveDocumentsToFile() {
-        saveDocumentsToFile(this.recentDocuments);
-    }
-
-    private void saveDocumentsToFile(List<DokumenSummary> list) {
-        try {
-            Jsonb jsonb = JsonbBuilder.create();
-            String json = jsonb.toJson(list);
-            Files.write(Paths.get(DATA_FILE), json.getBytes(StandardCharsets.UTF_8));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     // Getters and Setters
@@ -311,8 +294,9 @@ public class DashboardBean implements Serializable {
         this.filteredDocuments = filteredDocuments;
     }
 
-    // Model DTO sederhana untuk contoh tabel
+    // Model DTO
     public static class DokumenSummary implements Serializable {
+        private static final long serialVersionUID = 1L;
         private String id;
         private String kategori;
         private String namaDokumen;
@@ -320,7 +304,6 @@ public class DashboardBean implements Serializable {
         private String status;
 
         public DokumenSummary() {
-            // Constructor default untuk serialisasi/deserialisasi JSON-B
         }
 
         public DokumenSummary(String kategori, String namaDokumen, String unitPengaju, String status) {

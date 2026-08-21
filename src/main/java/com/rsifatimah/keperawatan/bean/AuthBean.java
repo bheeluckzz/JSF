@@ -1,27 +1,21 @@
 package com.rsifatimah.keperawatan.bean;
 
+import com.rsifatimah.keperawatan.dao.UserDAO;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
-import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.List;
 
 @Named("authBean")
 @SessionScoped
 public class AuthBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private static final String USERS_FILE = "users.json";
 
     private String username;
     private String password;
@@ -30,33 +24,45 @@ public class AuthBean implements Serializable {
     private boolean showRegister = false;
 
     private User loggedUser;
+    private transient UserDAO userDAO;
 
     @PostConstruct
     public void init() {
-        // Init any properties if needed
+        getUserDAO();
+    }
+
+    private UserDAO getUserDAO() {
+        if (userDAO == null) {
+            userDAO = new UserDAO();
+        }
+        return userDAO;
     }
 
     public String login() {
-        List<User> users = loadUsers();
+        if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Login Gagal", "Username dan password wajib diisi."));
+            return null;
+        }
+
         String hashedInputPassword = sha256(password);
+        User user = getUserDAO().findByUsername(username.trim());
 
-        for (User user : users) {
-            if (user.getUsername().equalsIgnoreCase(username) && user.getPassword().equals(hashedInputPassword)) {
-                this.loggedUser = user;
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("loggedUser", user);
-                
-                // Clear fields
-                this.username = null;
-                this.password = null;
+        if (user != null && user.getPassword().equalsIgnoreCase(hashedInputPassword)) {
+            this.loggedUser = user;
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("loggedUser", user);
 
-                try {
-                    FacesContext.getCurrentInstance().getExternalContext().redirect("dashboard.xhtml");
-                    FacesContext.getCurrentInstance().responseComplete();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return "dashboard?faces-redirect=true";
+            // Clear fields
+            this.username = null;
+            this.password = null;
+
+            try {
+                FacesContext.getCurrentInstance().getExternalContext().redirect("dashboard.xhtml");
+                FacesContext.getCurrentInstance().responseComplete();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            return "dashboard?faces-redirect=true";
         }
 
         FacesContext.getCurrentInstance().addMessage(null,
@@ -74,39 +80,42 @@ public class AuthBean implements Serializable {
             return null;
         }
 
-        List<User> users = loadUsers();
-
-        for (User user : users) {
-            if (user.getUsername().equalsIgnoreCase(username)) {
-                FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Registrasi Gagal", "Username sudah digunakan."));
-                return null;
-            }
+        String trimmedUsername = username.trim();
+        User existing = getUserDAO().findByUsername(trimmedUsername);
+        if (existing != null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Registrasi Gagal", "Username sudah digunakan."));
+            return null;
         }
 
         String hashedPassword = sha256(password);
-        User newUser = new User(username, hashedPassword, fullName, role);
-        users.add(newUser);
-        saveUsers(users);
+        User newUser = new User(trimmedUsername, hashedPassword, fullName.trim(), role.trim());
+        boolean success = getUserDAO().insert(newUser);
 
-        // Auto login after registration
-        this.loggedUser = newUser;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("loggedUser", newUser);
+        if (success) {
+            // Auto login after registration
+            this.loggedUser = newUser;
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("loggedUser", newUser);
 
-        // Clear fields
-        this.username = null;
-        this.password = null;
-        this.fullName = null;
-        this.role = null;
-        this.showRegister = false;
+            // Clear fields
+            this.username = null;
+            this.password = null;
+            this.fullName = null;
+            this.role = null;
+            this.showRegister = false;
 
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("dashboard.xhtml");
-            FacesContext.getCurrentInstance().responseComplete();
-        } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                FacesContext.getCurrentInstance().getExternalContext().redirect("dashboard.xhtml");
+                FacesContext.getCurrentInstance().responseComplete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return "dashboard?faces-redirect=true";
+        } else {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Registrasi Gagal", "Gagal menyimpan user ke database."));
+            return null;
         }
-        return "dashboard?faces-redirect=true";
     }
 
     public String logout() {
@@ -127,37 +136,6 @@ public class AuthBean implements Serializable {
         this.password = null;
         this.fullName = null;
         this.role = null;
-    }
-
-    private List<User> loadUsers() {
-        File file = new File(USERS_FILE);
-        if (file.exists()) {
-            try {
-                String content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-                Jsonb jsonb = JsonbBuilder.create();
-                User[] array = jsonb.fromJson(content, User[].class);
-                List<User> list = new ArrayList<>();
-                if (array != null) {
-                    for (User u : array) {
-                        list.add(u);
-                    }
-                }
-                return list;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return new ArrayList<>();
-    }
-
-    private void saveUsers(List<User> list) {
-        try {
-            Jsonb jsonb = JsonbBuilder.create();
-            String json = jsonb.toJson(list);
-            Files.write(Paths.get(USERS_FILE), json.getBytes(StandardCharsets.UTF_8));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private String sha256(String base) {
